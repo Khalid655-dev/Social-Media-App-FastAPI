@@ -6,19 +6,17 @@ from pydantic.types import conint
 from sqlalchemy.sql.sqltypes import Integer
 
 
-class StudentBase(BaseModel):
-    name: str
-    roll_no: int
-    subject: str
-    monthly_fee: int
+class PostBase(BaseModel):
+    title: str
+    content: str 
+    published: bool = True
 
 
-
-class StudentCreate(StudentBase):
+class PostCreate(PostBase):
     pass
 
     
-class AdminOut(BaseModel):
+class UserOut(BaseModel):
     id: int
     email: EmailStr
     created_at: datetime
@@ -27,30 +25,30 @@ class AdminOut(BaseModel):
        orm_mode = True 
 
 
-class Student(StudentBase):
+class Post(PostBase):
     id: int
     created_at: datetime
-    admin_id: int
-    registered_by_admin: AdminOut
+    owner_id: int
+    owner: UserOut
 
     class Config:
        orm_mode = True 
 
 
-class StudentOut(Student):
-    pass
-
+class PostOut(BaseModel):
+    Post: Post
+    votes: int
 
     class Config:
         orm_mode = True
 
 
-class AdminSignup(BaseModel):
+class UserCreate(BaseModel):
     email: EmailStr
     password: str
 
 
-class AdminLogin(BaseModel):
+class UserLogin(BaseModel):
     email: EmailStr
     password: str  
 
@@ -64,27 +62,8 @@ class TokenData(BaseModel):
     id: Optional[str] = None
 
 
-class TeacherSignup(BaseModel):
-    name: str
-    email: EmailStr
-    password: str
-
-
-class TeacherLogin(BaseModel):
-    email: EmailStr
-    password: str
-
-class TeacherOut(BaseModel):
-    id: int
-    email: EmailStr
-    created_at: datetime
-
-    class Config:
-       orm_mode = True
-
-
-class Subject(BaseModel):
-    student_id: int
+class Vote(BaseModel):
+    post_id: int
     dir: conint(le=1)    
     
                 

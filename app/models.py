@@ -7,43 +7,30 @@ from sqlalchemy.sql.functions import now
 from sqlalchemy.sql.schema import ForeignKey, PrimaryKeyConstraint
 from sqlalchemy.sql.sqltypes import TIMESTAMP, Boolean, Integer, String
 from .database import Base
-from datetime import datetime
 
-class Student(Base):
-    __tablename__ = 'students'
+class Post(Base):
+    __tablename__ = 'posts'
 
     id = Column(Integer, primary_key=True, nullable=False)
-    name = Column(String(400), nullable=False)
-    roll_no = Column(Integer, nullable=False)
-    subject = Column(String(200), nullable=False)
-    monthly_fee = Column(Integer, nullable=False)
+    title = Column(String, nullable=False)
+    content = Column(String, nullable=False)
+    published = Column(Boolean, server_default='TRUE', nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), server_default=text('now()'), nullable=False)
-    admin_id = Column(Integer, ForeignKey("admins.id", ondelete="CASCADE"), nullable=False)
+    owner_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
-    registered_by_admin = relationship("Admin")
+    owner = relationship("User")
     
 
-class Admin(Base):
-    __tablename__ = 'admins'
+class User(Base):
+    __tablename__ = 'users'
     id = Column(Integer, primary_key=True, nullable=False)
-    email = Column(String(200), nullable=False, unique=True)
-    password = Column(String(400), nullable=False)
+    email = Column(String, nullable=False, unique=True)
+    password = Column(String, nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), server_default=text('now()'), nullable=False)
 
-class Teacher(Base):
-    __tablename__ = 'teachers'
-    id = Column(Integer, primary_key=True, nullable=False)
-    name = Column(String(200), nullable=False, unique=True)
-    email = Column(String(200), nullable=False, unique=True)
-    password = Column(String(400), nullable=False)
-    specialization = Column(String(400), nullable=True)
-    joining_date = Column(TIMESTAMP(timezone=True), server_default=text('now()'), nullable=True)
-    created_at = Column(TIMESTAMP(timezone=True), server_default=text('now()'), nullable=True)
 
 class Vote(Base):
     __tablename__ = 'votes'
-    teacher = Column(Integer, ForeignKey("teachers.id", ondelete="CASCADE"), primary_key=True)
-    student_id = Column(Integer, ForeignKey("students.id", ondelete="CASCADE"), primary_key=True)
-
-
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    post_id = Column(Integer, ForeignKey("posts.id", ondelete="CASCADE"), primary_key=True)
 
